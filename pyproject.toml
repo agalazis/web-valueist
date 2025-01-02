@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "web-valueist"
+version = "0.1.0"
+description = ""
+authors = ["Andreas Galazis"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.13"
+
+[tool.poetry.scripts]
+web_valueist = "web_valueist.__main__:__main__"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
