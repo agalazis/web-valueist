@@ -7,13 +7,18 @@ from .operator import Operator, OperatorNotSupportedError
 import logging
 
 logger = logging.getLogger(__name__)
-
+class ValueNotFound(ValueistException):
+    def __init__(self, *args: object) -> None:
+        super().__init__("Value not found")
 
 def _fetch_value(url: str, selector: str):
     response = requests.get(url, timeout=10)
     logger.debug("Looking for %s in %s", selector, response.text)
     soup = BeautifulSoup(response.content, "lxml")
-    value = soup.css.select(selector)[0].text
+    elements=soup.css.select(selector)
+    if len(elements)<1:
+        raise ValueNotFound
+    value = elements[0].text
     logger.debug("Found value %s", value)
     return value
 

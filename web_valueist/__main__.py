@@ -3,9 +3,7 @@ import logging
 import web_valueist
 from argparse import ArgumentParser
 from typing import TypedDict, Unpack
-from sys import stderr
 from signal import signal, SIGTERM
-
 logger = logging.getLogger(__name__)
 
 

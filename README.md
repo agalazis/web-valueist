@@ -3,6 +3,14 @@
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
 
+
+## Setup
+
+While in project directory:
+```
+./install.sh
+```
+
 ## Usage:
 
 `web_valueist [-h] [--debug] url parser_name selector operator_name value`
@@ -55,3 +63,11 @@ ERROR:__main__:Failure: Condition not satisfied
 ```
 
 Exit Code: `1`
+
+
+
+### Sample cron job
+
+```
+*/30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 && notify-send "Some fancy car matching your criteria was found"
+```
