@@ -1,0 +1,4 @@
+#!/bin/bash
+DIR="$(dirname "$(readlink -f "$0")")";
+PROJ_DIR="$(dirname $DIR)"
+PYTHONPATH=$PYTHONPATH:$PROJ_DIR python -m web_valueist $*
