@@ -7,6 +7,8 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.13"
+beautifulsoup4 = "^4.12.3"
+requests = "^2.32.3"
 
 [tool.poetry.scripts]
 web_valueist = "web_valueist.__main__:__main__"
