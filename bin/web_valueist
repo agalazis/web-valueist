@@ -1,6 +1,8 @@
 #!/bin/bash
 DIR="$(dirname "$(readlink -f "$0")")";
 PROJ_DIR="$(dirname $DIR)"
-source source $PROJ_DIR/.venv/bin/activate
+source $PROJ_DIR/.venv/bin/activate
 PYTHONPATH=$PYTHONPATH:$PROJ_DIR python -m web_valueist $*
+exit_code=$?
 deactivate
+exit $exit_code
