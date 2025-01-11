@@ -69,5 +69,5 @@ Exit Code: `1`
 ### Sample cron job
 
 ```
-*/30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 && notify-send "Some fancy car matching your criteria was found"
+*/30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 &&message="Some fancy car matching your criteria was found" &&command -v notify-send >/dev/null 2>&1 && notify-send $message || say $message
 ```
