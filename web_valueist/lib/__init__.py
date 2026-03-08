@@ -11,7 +11,7 @@ class ValueNotFound(ValueistException):
     def __init__(self, *args: object) -> None:
         super().__init__("Value not found")
 
-def _fetch_value(url: str, selector: str):
+def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)
     logger.debug("Looking for %s in %s", selector, response.text)
     soup = BeautifulSoup(response.content, "lxml")
@@ -43,7 +43,7 @@ def evaluate(
     quantifier: str = "ANY",
 ):
 
-    current_values = _fetch_value(url, selector)
+    current_values = _fetch_values(url, selector)
     logger.debug("Found value %s", current_values)
     results = [
         _apply_operator(parser_name, val, operator_name, value)
