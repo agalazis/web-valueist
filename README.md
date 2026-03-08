@@ -26,11 +26,13 @@ positional arguments:
 
 options:
   -h, --help      show this help message and exit
-  --debug
+  --debug         Show debug logs including found values
   --json          Output input and result as JSON
 ```
 
 ## Sample Usage
+
+By default, `web_valueist` is silent and communicates success or failure via the exit code.
 
 Sample success
 
@@ -39,12 +41,6 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 ```
 
 ( you can also use `gt` instead of `">"`)
-
-Output:
-
-```
-INFO:web_valueist.lib:Found value ['245']
-```
 
 Exit Code: `0`
 
@@ -56,20 +52,20 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 
 ( you can also use `lt` instead of `"<"`)
 
+Exit Code: `1`
+
+### Debugging
+
+Use the `--debug` flag to see the values fetched from the web.
+
+```
+python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240 --debug
+```
+
 Output:
 
 ```
-INFO:web_valueist.lib:Found value ['245']
-```
-
-Exit Code: `1`
-
-### Using Quantifiers
-
-When a selector matches multiple elements, you can use `ANY` or `EVERY`.
-
-```
-python -m web_valueist https://example.com int ANY .price ">" 100
+DEBUG:web_valueist.lib:Found value ['245']
 ```
 
 ### JSON Output
@@ -85,6 +81,13 @@ Output:
 {"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
 ```
 
+### Using Quantifiers
+
+When a selector matches multiple elements, you can use `ANY` or `EVERY`.
+
+```
+python -m web_valueist https://example.com int ANY .price ">" 100
+```
 
 ### Sample cron job
 
