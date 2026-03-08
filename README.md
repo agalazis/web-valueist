@@ -13,21 +13,21 @@ While in project directory:
 
 ## Usage:
 
-`web_valueist [-h] [--debug] url parser_name selector operator_name value`
+`web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
 
 ```
 positional arguments:
   url
   parser_name
+  quantifier      Optional: ANY or EVERY (default: ANY)
   selector
   operator_name
   value
 
 options:
-  -h, --help     show this help message and exit
+  -h, --help      show this help message and exit
   --debug
-
-Did somebody say cron jobs? Have fun!
+  --json          Output input and result as JSON
 ```
 
 ## Sample Usage
@@ -43,7 +43,7 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 Output:
 
 ```
-INFO:__main__:Success: Condition satisfied
+INFO:web_valueist.lib:Found value ['245']
 ```
 
 Exit Code: `0`
@@ -59,11 +59,31 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 Output:
 
 ```
-ERROR:__main__:Failure: Condition not satisfied
+INFO:web_valueist.lib:Found value ['245']
 ```
 
 Exit Code: `1`
 
+### Using Quantifiers
+
+When a selector matches multiple elements, you can use `ANY` or `EVERY`.
+
+```
+python -m web_valueist https://example.com int ANY .price ">" 100
+```
+
+### JSON Output
+
+Use the `--json` flag to get a structured output.
+
+```
+python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
+```
+
+Output:
+```json
+{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
+```
 
 
 ### Sample cron job
