@@ -21,17 +21,24 @@ class CliArgs(Args):
     json: bool
 
 
-def _parse_args() -> CliArgs:
+def _detect_optional_arguments(config: dict[str, dict]):
     import sys
-
-    # Peek at arguments to determine if a quantifier is present
-    # Skip script name (sys.argv[0]) and check 3rd positional argument (sys.argv[3])
-    # Note: flags like --debug might be mixed in, but standard usage is positional first
-
-    # A more robust way to peek at positional arguments ignoring flags
     positional_args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
+    results = {}
+    for name, attr in config.items():
+        pos = attr["position"]
+        possible_values = attr["possible_values"]
+        results[name] = (
+            len(positional_args) > pos and positional_args[pos].upper() in possible_values
+        )
+    return results
 
-    has_quantifier = len(positional_args) >= 3 and positional_args[2].upper() in ["ANY", "EVERY"]
+
+def _parse_args() -> CliArgs:
+    optional_args = _detect_optional_arguments(
+        {"quantifier": {"position": 2, "possible_values": ["ANY", "EVERY"]}}
+    )
+    has_quantifier = optional_args.get("quantifier")
 
     parser = ArgumentParser(
         prog="web_valueist",
