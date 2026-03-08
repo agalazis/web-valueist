@@ -13,24 +13,26 @@ While in project directory:
 
 ## Usage:
 
-`web_valueist [-h] [--debug] url parser_name selector operator_name value`
+`web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
 
 ```
 positional arguments:
   url
   parser_name
+  quantifier      Optional: ANY or EVERY (default: ANY)
   selector
   operator_name
   value
 
 options:
-  -h, --help     show this help message and exit
-  --debug
-
-Did somebody say cron jobs? Have fun!
+  -h, --help      show this help message and exit
+  --debug         Show debug logs including found values
+  --json          Output input and result as JSON
 ```
 
 ## Sample Usage
+
+By default, `web_valueist` is silent and communicates success or failure via the exit code.
 
 Sample success
 
@@ -39,12 +41,6 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 ```
 
 ( you can also use `gt` instead of `">"`)
-
-Output:
-
-```
-INFO:__main__:Success: Condition satisfied
-```
 
 Exit Code: `0`
 
@@ -56,15 +52,48 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 
 ( you can also use `lt` instead of `"<"`)
 
+Exit Code: `1`
+
+### Debugging
+
+Use the `--debug` flag to see the values fetched from the web.
+
+```
+python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240 --debug
+```
+
 Output:
 
 ```
-ERROR:__main__:Failure: Condition not satisfied
+DEBUG:web_valueist.lib:Found value ['245']
 ```
 
-Exit Code: `1`
+### JSON Output
 
+Use the `--json` flag to get a structured output.
 
+```
+python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
+```
+
+Output:
+```json
+{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
+```
+
+### Using Quantifiers
+
+When a selector matches multiple elements, you can use `ANY` or `EVERY`.
+
+- **ANY** (default): At least one selector match needs to satisfy the condition.
+- **EVERY**: All selector matches need to satisfy the condition.
+
+Example using `EVERY`:
+```
+python -m web_valueist https://example.com int EVERY .price ">" 100
+```
+
+If no quantifier is specified, `ANY` is used by default.
 
 ### Sample cron job
 
