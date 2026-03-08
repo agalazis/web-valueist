@@ -13,7 +13,11 @@ class ValueNotFound(ValueistException):
 
 def _fetch_value(url: str, selector: str):
     response = requests.get(url, timeout=10)
-    logger.debug("Looking for %s in %s", selector, response.text)
+    if logger.isEnabledFor(logging.DEBUG):
+        # We only access response.text if we are in debug mode
+        # to avoid unnecessary decoding of the response content
+        # for large payloads.
+        logger.debug("Looking for %s in %s", selector, response.text)
     soup = BeautifulSoup(response.content, "lxml")
     elements=soup.css.select(selector)
     if len(elements)<1:
