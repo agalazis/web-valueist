@@ -7,4 +7,5 @@ __all__ = [
     "ParserNotSupportedError",
     "OperatorNotSupportedError",
     "ValueistException",
+    "ValueNotFound",
 ]

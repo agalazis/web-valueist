@@ -61,7 +61,8 @@ def _parse_args() -> CliArgs:
 
     _ = parser.add_argument("selector", help="The CSS selector to find the value")
     _ = parser.add_argument(
-        "operator_name", help="The operator to use for comparison (e.g., gt, lt, eq)"
+        "operator_name",
+        help="The operator to use for comparison (e.g., gt, lt, eq, ne, !=)",
     )
     _ = parser.add_argument("value", help="The reference value to compare against")
 
