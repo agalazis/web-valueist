@@ -85,9 +85,15 @@ Output:
 
 When a selector matches multiple elements, you can use `ANY` or `EVERY`.
 
+- **ANY** (default): At least one selector match needs to satisfy the condition.
+- **EVERY**: All selector matches need to satisfy the condition.
+
+Example using `EVERY`:
 ```
-python -m web_valueist https://example.com int ANY .price ">" 100
+python -m web_valueist https://example.com int EVERY .price ">" 100
 ```
+
+If no quantifier is specified, `ANY` is used by default.
 
 ### Sample cron job
 
