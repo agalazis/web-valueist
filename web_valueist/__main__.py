@@ -22,6 +22,17 @@ class CliArgs(Args):
 
 
 def _parse_args() -> CliArgs:
+    import sys
+
+    # Peek at arguments to determine if a quantifier is present
+    # Skip script name (sys.argv[0]) and check 3rd positional argument (sys.argv[3])
+    # Note: flags like --debug might be mixed in, but standard usage is positional first
+
+    # A more robust way to peek at positional arguments ignoring flags
+    positional_args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
+
+    has_quantifier = len(positional_args) >= 3 and positional_args[2].upper() in ["ANY", "EVERY"]
+
     parser = ArgumentParser(
         prog="web_valueist",
         description="""Fetches  the value from the web, compares 
@@ -29,50 +40,26 @@ def _parse_args() -> CliArgs:
         if the condition is satisfied """,
         epilog="Did somebody say cron jobs? Have fun!",
     )
-    # Use parse_known_args or manually handle the quantifier
-    # The requirement says ANY/EVERY should precede selector
-    # Current: url parser_name selector operator_name value
-    # Desired: url parser_name [quantifier] selector operator_name value
-
-    # We'll stick to positional arguments and manually adjust if 6 arguments are provided
-    # or if the 3rd argument is ANY/EVERY.
 
     _ = parser.add_argument("url")
     _ = parser.add_argument("parser_name")
-    _ = parser.add_argument("selector_or_quantifier")
-    _ = parser.add_argument("operator_or_selector")
-    _ = parser.add_argument("value_or_operator")
-    _ = parser.add_argument("maybe_value", nargs="?")
+
+    if has_quantifier:
+        _ = parser.add_argument("quantifier")
+
+    _ = parser.add_argument("selector")
+    _ = parser.add_argument("operator_name")
+    _ = parser.add_argument("value")
 
     _ = parser.add_argument("--debug", action="store_true")
     _ = parser.add_argument("--json", action="store_true")
 
-    parsed_args, unknown = parser.parse_known_args()
-    args = parsed_args.__dict__
+    args = parser.parse_args().__dict__
 
-    # Handle quantifier logic
-    if args["selector_or_quantifier"].upper() in ["ANY", "EVERY"]:
-        args["quantifier"] = args["selector_or_quantifier"].upper()
-        args["selector"] = args["operator_or_selector"]
-        args["operator_name"] = args["value_or_operator"]
-        args["value"] = args["maybe_value"]
-        if args["value"] is None:
-             parser.error("the following arguments are required: value")
-    else:
+    if not has_quantifier:
         args["quantifier"] = "ANY"
-        args["selector"] = args["selector_or_quantifier"]
-        args["operator_name"] = args["operator_or_selector"]
-        args["value"] = args["value_or_operator"]
-        if args["maybe_value"] is not None:
-             # If we have a 6th argument but 3rd wasn't a quantifier, it might be an error or we shift
-             # But let's stick to the requirement
-             pass
-
-    # Clean up temporary keys
-    del args["selector_or_quantifier"]
-    del args["operator_or_selector"]
-    del args["value_or_operator"]
-    del args["maybe_value"]
+    else:
+        args["quantifier"] = args["quantifier"].upper()
 
     return args
 

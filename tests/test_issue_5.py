@@ -16,7 +16,7 @@ def test_evaluate_logs_value(requests_mock, caplog):
     url = "https://example.com"
     requests_mock.get(url, text='<html><body><span class="price">100</span></body></html>')
 
-    with caplog.at_level(logging.INFO):
+    with caplog.at_level(logging.DEBUG):
         evaluate(url, ".price", "int", ">", "50")
 
     assert "Found value ['100']" in caplog.text

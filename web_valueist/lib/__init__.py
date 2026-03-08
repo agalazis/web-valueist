@@ -44,7 +44,7 @@ def evaluate(
 ):
 
     current_values = _fetch_value(url, selector)
-    logger.info("Found value %s", current_values)
+    logger.debug("Found value %s", current_values)
     results = [
         _apply_operator(parser_name, val, operator_name, value)
         for val in current_values
