@@ -18,9 +18,9 @@ def _fetch_value(url: str, selector: str):
     elements=soup.css.select(selector)
     if len(elements)<1:
         raise ValueNotFound
-    value = elements[0].text
-    logger.debug("Found value %s", value)
-    return value
+    values = [el.text for el in elements]
+    logger.debug("Found values %s", values)
+    return values
 
 
 def _apply_operator(
@@ -35,11 +35,32 @@ def _apply_operator(
 
 
 def evaluate(
-    url: str, selector: str, parser_name: Parser, operator_name: Operator, value: str
+    url: str,
+    selector: str,
+    parser_name: Parser,
+    operator_name: Operator,
+    value: str,
+    quantifier: str = "ANY",
 ):
 
-    current_value = _fetch_value(url, selector)
-    return _apply_operator(parser_name, current_value, operator_name, value)
+    current_values = _fetch_value(url, selector)
+    logger.info("Found value %s", current_values)
+    results = [
+        _apply_operator(parser_name, val, operator_name, value)
+        for val in current_values
+    ]
+    if quantifier == "ANY":
+        success = any(results)
+    elif quantifier == "EVERY":
+        success = all(results)
+    else:
+        # Fallback to ANY if quantifier is unknown, or we could raise an error
+        success = any(results)
+
+    return {
+        "success": success,
+        "value": current_values if len(current_values) > 1 else current_values[0],
+    }
 
 
 __all__ = [
