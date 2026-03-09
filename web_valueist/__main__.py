@@ -23,14 +23,30 @@ class CliArgs(Args):
 
 def _detect_optional_arguments(config: dict[str, dict]):
     import sys
+
     positional_args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
     results = {}
+    # We expect 5 positional arguments without quantifier, 6 with quantifier
+    # url, parser_name, [quantifier], selector, operator_name, value
+    has_quantifier = len(positional_args) == 6
+
     for name, attr in config.items():
-        pos = attr["position"]
-        possible_values = attr["possible_values"]
-        results[name] = (
-            len(positional_args) > pos and positional_args[pos].upper() in possible_values
-        )
+        if name == "quantifier":
+            pos = attr["position"]
+            possible_values = attr["possible_values"]
+            results[name] = (
+                has_quantifier
+                and len(positional_args) > pos
+                and positional_args[pos].upper() in possible_values
+            )
+        else:
+            # Fallback for other potential optional arguments
+            pos = attr["position"]
+            possible_values = attr["possible_values"]
+            results[name] = (
+                len(positional_args) > pos
+                and positional_args[pos].upper() in possible_values
+            )
     return results
 
 
