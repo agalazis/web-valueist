@@ -1,15 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 from . import parser, operator
-from .exception import ValueistException
+from .exception import ValueistException, ValueNotFound
 from .parser import Parser, ParserNotSupportedError
 from .operator import Operator, OperatorNotSupportedError
 import logging
 
 logger = logging.getLogger(__name__)
-class ValueNotFound(ValueistException):
-    def __init__(self, *args: object) -> None:
-        super().__init__("Value not found")
 
 def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)

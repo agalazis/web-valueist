@@ -30,9 +30,9 @@ class OperatorNotSupportedError(ValueistException):
         )
 
 
-def _get_operator(parser_name: str):
+def _get_operator(operator_name: str):
     try:
-        return _operators[parser_name]
+        return _operators[operator_name]
     except KeyError as exception:
         raise OperatorNotSupportedError from exception
 
