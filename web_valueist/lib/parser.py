@@ -4,7 +4,7 @@ from typing import Literal
 
 from .exception import ValueistException
 
-type Parser = Literal["int", "str", "bool"]
+type Parser = Literal["int", "str", "bool", "float"]
 
 INT_EXPONENT=Decimal('0')
 

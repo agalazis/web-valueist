@@ -1,15 +1,12 @@
 import requests
 from bs4 import BeautifulSoup
 from . import parser, operator
-from .exception import ValueistException
+from .exception import ValueistException, ValueNotFound
 from .parser import Parser, ParserNotSupportedError
 from .operator import Operator, OperatorNotSupportedError
 import logging
 
 logger = logging.getLogger(__name__)
-class ValueNotFound(ValueistException):
-    def __init__(self, *args: object) -> None:
-        super().__init__("Value not found")
 
 def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)
@@ -23,7 +20,6 @@ def _fetch_values(url: str, selector: str):
     if len(elements)<1:
         raise ValueNotFound
     values = [el.text for el in elements]
-    logger.debug("Found values %s", values)
     return values
 
 
@@ -48,7 +44,8 @@ def evaluate(
 ):
 
     current_values = _fetch_values(url, selector)
-    logger.debug("Found value %s", current_values)
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug("Found value %s", current_values)
     results = [
         _apply_operator(parser_name, val, operator_name, value)
         for val in current_values
@@ -74,4 +71,5 @@ __all__ = [
     "ParserNotSupportedError",
     "OperatorNotSupportedError",
     "ValueistException",
+    "ValueNotFound",
 ]

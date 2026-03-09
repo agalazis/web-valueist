@@ -3,7 +3,11 @@ import operator
 
 from .exception import ValueistException
 
-type Operator = Literal["gt", ">", "lt", "<", "ge", ">=", "le", "<=", "eq", "="]
+type Operator = Literal[
+    "gt", ">", "lt", "<", "ge", ">=", "le", "<=", "eq", "=", "ne", "!="
+]
+
+type ParsedValue = str | int | float | bool
 
 _operators = {
     "gt": operator.gt,
@@ -28,12 +32,12 @@ class OperatorNotSupportedError(ValueistException):
         )
 
 
-def _get_operator(parser_name: str):
+def _get_operator(operator_name: str):
     try:
-        return _operators[parser_name]
+        return _operators[operator_name]
     except KeyError as exception:
         raise OperatorNotSupportedError from exception
 
 
-def apply(operator_name: Operator, a: str | int | bool, b: str | int | bool) -> bool:
+def apply(operator_name: Operator, a: ParsedValue, b: ParsedValue) -> bool:
     return _get_operator(operator_name)(a, b)
