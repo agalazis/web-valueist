@@ -8,33 +8,75 @@ type Parser = Literal["int", "str", "bool", "float"]
 
 INT_EXPONENT=Decimal('0')
 
-def _clean_float_string(val:str):
-    """Cleans up float string and returns float
-    The cleanup regex does the following
-    1) Keeps only digits, commas and dots
-    2) Removes commas or dots that do not match coma or dot and the final 1 or 2 digits
-
+def _clean_float_string(val: str):
+    """Cleans up float string and returns float string ready for Decimal/float conversion.
+    It attempts to handle thousands separators (both . and ,) by assuming the last
+    separator is the decimal point if multiple separators or different types are present.
 
     Args:
         val (str): a string that is expected to be parsed as float
 
     Returns:
-        str: The float for the provided string 
-    """    
-    return re.sub(r"[^\d|\.|\,]|(?![.,]\d{1,2}$)[.,]", "", val).replace(',', '.')
+        str: The normalized float string
+    """
+    # Keep only digits, dots and commas
+    cleaned = re.sub(r"[^\d.,]", "", val)
 
-def _clean_bool_tiny_int_string(val: str):
-    """Cleans up bool/tiny int values and returns tiny int string
+    # Find all separators
+    separators = re.findall(r"[.,]", cleaned)
+    if not separators:
+        return cleaned
+
+    # If we have multiple separators or both types,
+    # the last one is the decimal point, others are thousands separators.
+    last_sep = separators[-1]
+    other_sep = "," if last_sep == "." else "."
+
+    # Remove all 'other' separators
+    cleaned = cleaned.replace(other_sep, "")
+
+    # Now we only have 'last_sep' type. If there are multiple, they are all thousands separators
+    # UNLESS it's the last one.
+    if cleaned.count(last_sep) > 1:
+        # 1.234.567 -> 1234567 (wait, if there's no decimal it's just an int)
+        # Actually, if there are multiple, we remove all of them.
+        cleaned = cleaned.replace(last_sep, "")
+    else:
+        # Only one separator left, treat as decimal point
+        cleaned = cleaned.replace(last_sep, ".")
+
+    return cleaned
+
+
+def _parse_bool(val: str):
+    """Parses a string into a boolean.
+    Supports true/false, yes/no, 1/0, t/f (case-insensitive).
 
     Args:
-        val str: a string that is expected to be parsed as bool/ tiny int
+        val (str): a string that is expected to be parsed as boolean
 
     Returns:
-        str: The tiny int for the provided string 
+        bool: The boolean for the provided string
     """
-    return re.sub('(?i)(?!true|false|1|0|t|f).', '',val).upper().replace('F','0').replace('T', '1')
+    normalized = val.strip().lower()
+    truthy = {"true", "1", "t", "yes", "y"}
+    falsy = {"false", "0", "f", "no", "n"}
 
-def _parse_int(val:str):
+    if normalized in truthy:
+        return True
+    if normalized in falsy:
+        return False
+
+    # Fallback/Error handling: if it's not recognized, we could return False or raise
+    # Let's be consistent with previous behavior but safer.
+    # Previous behavior was int(cleaned_string) which could raise.
+    try:
+        return bool(int(re.sub(r"\D", "", normalized)))
+    except (ValueError, TypeError):
+        return False
+
+
+def _parse_int(val: str):
     """ Cleans up int string and returns int
     The cleanup regex does the following
     1) Cleans up string as float
@@ -49,20 +91,9 @@ def _parse_int(val:str):
     float_string=_clean_float_string(val)
     return int(Decimal(float_string).quantize(exp=INT_EXPONENT, rounding=ROUND_HALF_UP))
 
-def _parse_float(val:str):
+def _parse_float(val: str):
     return float(_clean_float_string(val))
 
-def _parse_bool(val:str):
-    """Cleans up bool/tiny int string and returns bool
-
-    Args:
-        val (str): a string that is expected to be parsed as boolean
-
-    Returns:
-        bool: The boolean for the provided string
-    """    
-    tiny_int_string = _clean_bool_tiny_int_string(val)
-    return bool(int(tiny_int_string))
 
 _parsers = {
     "int": _parse_int, 
