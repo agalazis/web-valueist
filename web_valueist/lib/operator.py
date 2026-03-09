@@ -7,6 +7,8 @@ type Operator = Literal[
     "gt", ">", "lt", "<", "ge", ">=", "le", "<=", "eq", "=", "ne", "!="
 ]
 
+type ParsedValue = str | int | float | bool
+
 _operators = {
     "gt": operator.gt,
     ">": operator.gt,
@@ -37,7 +39,5 @@ def _get_operator(operator_name: str):
         raise OperatorNotSupportedError from exception
 
 
-def apply(
-    operator_name: Operator, a: str | int | float | bool, b: str | int | float | bool
-) -> bool:
+def apply(operator_name: Operator, a: ParsedValue, b: ParsedValue) -> bool:
     return _get_operator(operator_name)(a, b)
