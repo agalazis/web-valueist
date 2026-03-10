@@ -4,6 +4,9 @@ def test_clean_float_string():
     assert _clean_float_string("1,234.56") == "1234.56"
     assert _clean_float_string("1.234,56") == "1234.56"
     assert _clean_float_string("$ 10.50") == "10.50"
+    assert _clean_float_string("-10.50") == "-10.50"
+    assert _clean_float_string("-$ 10.50") == "-10.50"
+
 
 def test_parse_int():
     assert _parse_int("100") == 100
@@ -19,6 +22,11 @@ def test_parse_bool():
     assert _parse_bool("False") is False
     assert _parse_bool("1") is True
     assert _parse_bool("0") is False
+    assert _parse_bool("yes") is True
+    assert _parse_bool("no") is False
+    assert _parse_bool("y") is True
+    assert _parse_bool("n") is False
+
 
 def test_parse_interface():
     assert parse("int", "10") == 10

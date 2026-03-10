@@ -23,13 +23,18 @@ class CliArgs(Args):
 
 def _detect_optional_arguments(config: dict[str, dict]):
     import sys
+
     positional_args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
     results = {}
     for name, attr in config.items():
         pos = attr["position"]
         possible_values = attr["possible_values"]
+        # Quantifier is at position 2 if there are 6 positional arguments.
+        # If there are only 5, then it's not present.
         results[name] = (
-            len(positional_args) > pos and positional_args[pos].upper() in possible_values
+            len(positional_args) == 6
+            and len(positional_args) > pos
+            and positional_args[pos].upper() in possible_values
         )
     return results
 
