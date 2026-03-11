@@ -8,6 +8,8 @@ def test_clean_float_string():
     assert _clean_float_string("1,234.567") == "1234.567"
     assert _clean_float_string("1.234.567,89") == "1234567.89"
     assert _clean_float_string("1,234,567.89") == "1234567.89"
+    assert _clean_float_string("-10.50") == "-10.50"
+    assert _clean_float_string("-$ 10.50") == "-10.50"
 
 def test_parse_int():
     assert _parse_int("100") == 100

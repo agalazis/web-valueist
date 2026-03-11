@@ -12,6 +12,7 @@ def _clean_float_string(val: str):
     """Cleans up float string and returns float string ready for Decimal/float conversion.
     It attempts to handle thousands separators (both . and ,) by assuming the last
     separator is the decimal point if multiple separators or different types are present.
+    Also preserves leading negative sign.
 
     Args:
         val (str): a string that is expected to be parsed as float
@@ -19,11 +20,18 @@ def _clean_float_string(val: str):
     Returns:
         str: The normalized float string
     """
-    # Keep only digits, dots and commas
-    cleaned = re.sub(r"[^\d.,]", "", val)
+    # Keep only digits, dots, commas and leading minus
+    cleaned = re.sub(r"[^\d.,-]", "", val)
 
-    # Find all separators
-    separators = re.findall(r"[.,]", cleaned)
+    # Ensure minus is only at the beginning
+    is_negative = cleaned.startswith("-")
+    cleaned = cleaned.replace("-", "")
+    if is_negative:
+        cleaned = "-" + cleaned
+
+    # Find all separators (ignoring the negative sign)
+    to_check = cleaned[1:] if is_negative else cleaned
+    separators = re.findall(r"[.,]", to_check)
     if not separators:
         return cleaned
 
@@ -33,19 +41,18 @@ def _clean_float_string(val: str):
     other_sep = "," if last_sep == "." else "."
 
     # Remove all 'other' separators
-    cleaned = cleaned.replace(other_sep, "")
+    prefix = "-" if is_negative else ""
+    body = to_check.replace(other_sep, "")
 
-    # Now we only have 'last_sep' type. If there are multiple, they are all thousands separators
-    # UNLESS it's the last one.
-    if cleaned.count(last_sep) > 1:
-        # 1.234.567 -> 1234567 (wait, if there's no decimal it's just an int)
-        # Actually, if there are multiple, we remove all of them.
-        cleaned = cleaned.replace(last_sep, "")
+    # Now we only have 'last_sep' type in body.
+    if body.count(last_sep) > 1:
+        # Multiple instances of the same separator are treated as thousands separators
+        body = body.replace(last_sep, "")
     else:
         # Only one separator left, treat as decimal point
-        cleaned = cleaned.replace(last_sep, ".")
+        body = body.replace(last_sep, ".")
 
-    return cleaned
+    return prefix + body
 
 
 def _parse_bool(val: str):
@@ -68,8 +75,6 @@ def _parse_bool(val: str):
         return False
 
     # Fallback/Error handling: if it's not recognized, we could return False or raise
-    # Let's be consistent with previous behavior but safer.
-    # Previous behavior was int(cleaned_string) which could raise.
     try:
         return bool(int(re.sub(r"\D", "", normalized)))
     except (ValueError, TypeError):
