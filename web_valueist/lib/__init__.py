@@ -15,7 +15,7 @@ def _fetch_values(url: str, selector: str):
         # to avoid unnecessary decoding of the response content
         # for large payloads.
         logger.debug("Looking for %s in %s", selector, response.text)
-    soup = BeautifulSoup(response.content, "lxml")
+    soup = BeautifulSoup(response.content, "html.parser")
     elements=soup.css.select(selector)
     if len(elements)<1:
         raise ValueNotFound
