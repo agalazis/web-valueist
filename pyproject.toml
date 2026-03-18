@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "web-valueist"
-version = "0.1.0"
+version = "1.0.0"
 description = ""
 authors = ["Andreas Galazis"]
 readme = "README.md"
@@ -10,6 +10,12 @@ python = "^3.13"
 beautifulsoup4 = "^4.12.3"
 requests = "^2.32.3"
 lxml = "^5.3.0"
+
+[tool.poetry.urls]
+"Issues" = "https://github.com/agalazis/web-valueist/issues"
+"Source Code" = "https://github.com/agalazis/web-valueist"
+"CI" = "https://github.com/agalazis/web-valueist/actions"
+"Releases" = "https://github.com/agalazis/web-valueist/releases"
 
 [tool.poetry.scripts]
 web_valueist = "web_valueist.__main__:__main__"
