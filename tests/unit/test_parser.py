@@ -1,4 +1,5 @@
-from web_valueist.lib.parser import parse, _clean_float_string, _parse_int, _parse_float, _parse_bool
+import pytest
+from web_valueist.lib.parser import parse, _clean_float_string, _parse_int, _parse_float, _parse_bool, ParserNotSupportedError
 
 def test_clean_float_string():
     assert _clean_float_string("1,234.56") == "1234.56"
@@ -33,3 +34,7 @@ def test_parse_interface():
     assert parse("float", "10.5") == 10.5
     assert parse("str", "hello") == "hello"
     assert parse("bool", "true") is True
+
+def test_parse_invalid_parser():
+    with pytest.raises(ParserNotSupportedError):
+        parse("invalid_parser", "some_value")
