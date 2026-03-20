@@ -27,10 +27,9 @@ def _apply_operator(
     parser_name: Parser,
     current_value: str,
     operator_name: Operator,
-    reference_value: str,
+    parsed_reference_value: operator.ParsedValue,
 ):
     parsed_current_value = parser.parse(parser_name, current_value)
-    parsed_reference_value = parser.parse(parser_name, reference_value)
     return operator.apply(operator_name, parsed_current_value, parsed_reference_value)
 
 
@@ -46,8 +45,10 @@ def evaluate(
     current_values = _fetch_values(url, selector)
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug("Found value %s", current_values)
+
+    parsed_reference_value = parser.parse(parser_name, value)
     results = [
-        _apply_operator(parser_name, val, operator_name, value)
+        _apply_operator(parser_name, val, operator_name, parsed_reference_value)
         for val in current_values
     ]
     if quantifier == "ANY":
