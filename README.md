@@ -56,7 +56,7 @@ pipenv install web-valueist
 
 ### Library
 
-You can import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a dictionary indicating whether the condition was met, along with the parsed values.
+You can import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a generic `EvaluateResult` dictionary indicating whether the condition was met, along with the extracted and typed parsed values (`list[int | float | str | bool]`). By default, if a value fails to parse it is silently filtered out, but you can enable `strict_parsing=True` to instead raise a `ParserError`.
 
 ```python
 import web_valueist
@@ -67,18 +67,19 @@ result = web_valueist.evaluate(
     parser_name="str",
     operator_name="eq",
     value="Example Domain",
-    quantifier="ANY" # Optional, defaults to "ANY"
+    quantifier="ANY", # Optional, defaults to "ANY"
+    strict_parsing=False # Optional, defaults to False. If True, unparsable values raise ParserError.
 )
 
 if result["success"]:
-    print(f"Match found! Fetched value: {result['value']}")
+    print(f"Match found! Fetched values (typed): {result['values']}")
 else:
     print("Condition not met.")
 ```
 
 ### CLI
 
-`web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
+`web_valueist [-h] [--debug] [--json] [--strict-parsing] url parser_name [quantifier] selector operator_name value`
 
 ```text
 positional arguments:
@@ -90,9 +91,10 @@ positional arguments:
   value
 
 options:
-  -h, --help      show this help message and exit
-  --debug         Show debug logs including found values
-  --json          Output input and result as JSON
+  -h, --help         show this help message and exit
+  --debug            Show debug logs including found values
+  --json             Output input and result as JSON
+  --strict-parsing   Raise error if a fetched value cannot be parsed instead of filtering it
 ```
 
 #### Sample Usage
@@ -143,7 +145,7 @@ python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
 
 Output:
 ```json
-{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": ["Example Domain"]}}
+{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "values": ["Example Domain"]}}
 ```
 
 #### Using Quantifiers

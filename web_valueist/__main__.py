@@ -13,7 +13,8 @@ class Args(TypedDict):
     parser_name: web_valueist.Parser
     operator_name: web_valueist.Operator
     value: str
-    quantifier: str
+    quantifier: web_valueist.Quantifier
+    strict_parsing: bool
 
 
 class CliArgs(Args):
@@ -47,7 +48,7 @@ def _parse_args() -> CliArgs:
 
     parser = ArgumentParser(
         prog="web_valueist",
-        usage="web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value",
+        usage="web_valueist [-h] [--debug] [--json] [--strict-parsing] url parser_name [quantifier] selector operator_name value",
         description="""Fetches  the value from the web, compares 
         it with a given value and exits with zero exit code 
         if the condition is satisfied """,
@@ -74,6 +75,9 @@ def _parse_args() -> CliArgs:
     _ = parser.add_argument("--debug", action="store_true", help="Enable debug logging")
     _ = parser.add_argument(
         "--json", action="store_true", help="Output input and result as JSON"
+    )
+    _ = parser.add_argument(
+        "--strict-parsing", action="store_true", help="Raise error if a fetched value cannot be parsed"
     )
 
     args = parser.parse_args().__dict__
