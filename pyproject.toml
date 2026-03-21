@@ -11,6 +11,7 @@ beautifulsoup4 = "^4.12.3"
 requests = "^2.32.3"
 
 [tool.poetry.urls]
+"Documentation" = "https://web-valueist.csmonk.com/"
 "Issues" = "https://github.com/agalazis/web-valueist/issues"
 "Source Code" = "https://github.com/agalazis/web-valueist"
 "CI" = "https://github.com/agalazis/web-valueist/actions"
