@@ -11,6 +11,8 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+type Quantifier = Literal["ANY", "EVERY"]
+
 class EvaluateResult(TypedDict, Generic[T]):
     success: bool
     value: list[T]
@@ -40,27 +42,27 @@ def _apply_operator(
 
 @overload
 def evaluate(
-    url: str, selector: str, parser_name: Literal["int"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+    url: str, selector: str, parser_name: Literal["int"], operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
 ) -> EvaluateResult[int]: ...
 
 @overload
 def evaluate(
-    url: str, selector: str, parser_name: Literal["float"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+    url: str, selector: str, parser_name: Literal["float"], operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
 ) -> EvaluateResult[float]: ...
 
 @overload
 def evaluate(
-    url: str, selector: str, parser_name: Literal["str"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+    url: str, selector: str, parser_name: Literal["str"], operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
 ) -> EvaluateResult[str]: ...
 
 @overload
 def evaluate(
-    url: str, selector: str, parser_name: Literal["bool"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+    url: str, selector: str, parser_name: Literal["bool"], operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
 ) -> EvaluateResult[bool]: ...
 
 @overload
 def evaluate(
-    url: str, selector: str, parser_name: Parser, operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+    url: str, selector: str, parser_name: Parser, operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
 ) -> EvaluateResult[int | float | str | bool]: ...
 
 def evaluate(
@@ -69,7 +71,7 @@ def evaluate(
     parser_name: Parser,
     operator_name: Operator,
     value: str,
-    quantifier: str = "ANY",
+    quantifier: Quantifier = "ANY",
     strict_parsing: bool = False,
 ) -> EvaluateResult[int | float | str | bool]:
 
@@ -110,6 +112,7 @@ __all__ = [
     "EvaluateResult",
     "Parser",
     "Operator",
+    "Quantifier",
     "ParserNotSupportedError",
     "OperatorNotSupportedError",
     "ValueistException",

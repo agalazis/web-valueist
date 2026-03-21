@@ -13,7 +13,7 @@ class Args(TypedDict):
     parser_name: web_valueist.Parser
     operator_name: web_valueist.Operator
     value: str
-    quantifier: str
+    quantifier: web_valueist.Quantifier
     strict_parsing: bool
 
 
