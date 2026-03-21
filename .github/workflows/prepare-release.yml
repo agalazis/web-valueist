@@ -1,0 +1,109 @@
+name: Prepare Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type (patch, minor, major)'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 1.8.3
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Bump version
+        id: bump_version
+        run: |
+          poetry version ${{ github.event.inputs.bump }}
+          NEW_VERSION=$(poetry version -s)
+          echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
+          echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update Changelog
+        run: |
+          DATE=$(date +'%Y-%m-%d')
+          awk -v ver="${{ env.NEW_VERSION }}" -v date="$DATE" '
+            /^## \[.*\] - .*/ && !inserted {
+              print "## [" ver "] - " date
+              print ""
+              print "### Added"
+              print "- "
+              print ""
+              print $0
+              inserted = 1
+              next
+            }
+            { print }
+          ' CHANGELOG.md > CHANGELOG.tmp && mv CHANGELOG.tmp CHANGELOG.md
+
+      - name: Commit and Push
+        run: |
+          git add pyproject.toml CHANGELOG.md
+          git commit -m "chore: bump version to ${{ env.NEW_VERSION }}"
+          git push
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mapfile -t NAVIGATORS < RELEASE_CANDIDATES
+
+          # Fetch previous release titles to find used names
+          USED_NAMES=$(gh release list --limit 100 | awk -F'\t' '{print $1}')
+
+          REMAINING=()
+          for nav in "${NAVIGATORS[@]}"; do
+            if ! echo "$USED_NAMES" | grep -q "$nav"; then
+              REMAINING+=("$nav")
+            fi
+          done
+
+          # If all names are used, reset and use the full list
+          if [ ${#REMAINING[@]} -eq 0 ]; then
+            REMAINING=("${NAVIGATORS[@]}")
+          fi
+
+          SELECTED_NAME=${REMAINING[$RANDOM % ${#REMAINING[@]}]}
+
+          # Extract the specific changelog section for this version
+          awk -v ver="${{ env.NEW_VERSION }}" '
+            /^## \[/ {
+              if (match($0, "^## \\[" ver "\\]")) { p=1; next }
+              else if (p) { p=0; nextfile }
+            }
+            p { print }
+          ' CHANGELOG.md > release_notes.md
+
+          # Prepend the intro message to the release notes
+          echo "Release v${{ env.NEW_VERSION }} named after the famous historical navigator/cartographer: **$SELECTED_NAME**." | cat - release_notes.md > temp_notes.md && mv temp_notes.md release_notes.md
+
+          gh release create v${{ env.NEW_VERSION }} --title "v${{ env.NEW_VERSION }} - $SELECTED_NAME" -F release_notes.md

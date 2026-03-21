@@ -1,0 +1,30 @@
+# Release Workflow
+
+This project uses an automated GitHub Actions workflow to handle new releases. The **Prepare Release** workflow manages versioning, changelog updates, and the creation of GitHub releases.
+
+## How to Trigger a Release
+
+You can trigger a new release manually from the GitHub website by following these steps:
+
+1. Go to the **Actions** tab in the repository.
+2. In the left sidebar, click on **Prepare Release**.
+3. On the right side, click the **Run workflow** dropdown button.
+4. Select the branch you want to run the workflow on (usually `main`).
+5. Choose the **Version bump type**:
+   - `patch`: Use for backward-compatible bug fixes (e.g., `1.0.0` -> `1.0.1`).
+   - `minor`: Use for new backward-compatible features (e.g., `1.0.0` -> `1.1.0`).
+   - `major`: Use for incompatible API changes (e.g., `1.0.0` -> `2.0.0`).
+6. Click the green **Run workflow** button.
+
+## What the Workflow Does Behind the Scenes
+
+Once triggered, the workflow automatically performs the following steps:
+
+1. **Checks out the repository.**
+2. **Sets up Python and installs Poetry.**
+3. **Bumps the version** in `pyproject.toml` using `poetry version <bump_type>`.
+4. **Updates `CHANGELOG.md`** by automatically adding a new release header (e.g., `## [1.0.1] - 2026-03-21`) and an `### Added` section at the top of the unreleased changes.
+5. **Commits and pushes** the updated `pyproject.toml` and `CHANGELOG.md` to the branch.
+6. **Creates a GitHub Release** using the GitHub CLI (`gh release create`), which automatically tags the new version in Git (e.g., `v1.0.1`).
+
+By creating a GitHub Release, this workflow subsequently triggers the existing `Publish to PyPI` and `Deploy docs to GitHub Pages` workflows, completing the full release pipeline.
