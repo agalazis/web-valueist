@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-03-18
+## [1.0.0] - 2026-03-20
+
+### Added
+- Project URLs added to `pyproject.toml`.
+- Added test cases for `ParserNotSupportedError` exception.
+
+### Changed
+- Bumped minimum Python version to `>=3.12`.
+- Optimized reference value parsing in evaluate loop to execute only once.
+
+### Removed
+- Removed `lxml` dependency to avoid build errors, using built-in `html.parser` instead.
+
+## [0.1.0] - 2026-03-18
 
 ### Added
 - Initial release of the `web_valueist` CLI tool.
