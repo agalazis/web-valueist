@@ -5,8 +5,13 @@ from .exception import ValueistException, ValueNotFound
 from .parser import Parser, ParserNotSupportedError
 from .operator import Operator, OperatorNotSupportedError
 import logging
+from typing import TypedDict
 
 logger = logging.getLogger(__name__)
+
+class EvaluateResult(TypedDict):
+    success: bool
+    value: list[str]
 
 def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)
@@ -40,7 +45,7 @@ def evaluate(
     operator_name: Operator,
     value: str,
     quantifier: str = "ANY",
-):
+) -> EvaluateResult:
 
     current_values = _fetch_values(url, selector)
     if logger.isEnabledFor(logging.DEBUG):
@@ -61,12 +66,13 @@ def evaluate(
 
     return {
         "success": success,
-        "value": current_values if len(current_values) > 1 else current_values[0],
+        "value": current_values,
     }
 
 
 __all__ = [
     "evaluate",
+    "EvaluateResult",
     "Parser",
     "Operator",
     "ParserNotSupportedError",

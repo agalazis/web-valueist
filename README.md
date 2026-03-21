@@ -143,7 +143,7 @@ python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
 
 Output:
 ```json
-{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
+{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": ["Example Domain"]}}
 ```
 
 #### Using Quantifiers
