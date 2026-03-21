@@ -136,9 +136,9 @@ If no quantifier is specified, `ANY` is used by default.
 You can also import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a dictionary indicating whether the condition was met, along with the parsed values.
 
 ```python
-from web_valueist import evaluate
+import web_valueist
 
-result = evaluate(
+result = web_valueist.evaluate(
     url="http://example.com",
     selector="h1",
     parser_name="str",
