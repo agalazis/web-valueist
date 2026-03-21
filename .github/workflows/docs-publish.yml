@@ -1,0 +1,53 @@
+name: Deploy docs to GitHub Pages
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      # For a simple markdown-to-pages setup without a static site generator like mkdocs,
+      # we can just upload the repo as is (or a docs directory if we have one).
+      # Here we assume README.md is enough or we just build a basic static directory.
+      # To set CNAME, we create a CNAME file.
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
+      - name: Create CNAME and index.html
+        run: |
+          mkdir -p docs_site
+          echo "web-valueist.csmonk.com" > docs_site/CNAME
+          # Convert Markdown to HTML using Pandoc, including the Morph Bootswatch theme
+          # --embed-resources explicitly base64 encodes and embeds the local logo.svg
+          pandoc README.md -f markdown -t html -s --embed-resources --standalone -o docs_site/index.html \
+            --metadata title="Web Valueist Documentation" \
+            -H <(echo '<link rel="stylesheet" href="https://bootswatch.com/5/morph/bootstrap.min.css"><style>body { max-width: 900px; margin: 0 auto; padding: 2rem; }</style>')
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './docs_site'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

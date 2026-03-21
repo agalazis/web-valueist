@@ -1,4 +1,17 @@
+<p align="center">
+  <img src="logo.svg" alt="Web Valueist Logo">
+</p>
+
 # Web Valueist
+
+[![PyPI version](https://badge.fury.io/py/web-valueist.svg)](https://badge.fury.io/py/web-valueist)
+[![Python versions](https://img.shields.io/pypi/pyversions/web-valueist.svg)](https://pypi.org/project/web-valueist/)
+[![License](https://img.shields.io/github/license/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/blob/main/LICENSE)
+[![GitHub Issues](https://img.shields.io/github/issues/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/issues)
+[![CI](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml/badge.svg)](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml)
+[![Docs](https://github.com/agalazis/web-valueist/actions/workflows/docs-publish.yml/badge.svg)](http://web-valueist.csmonk.com/)
+
+[Documentation Website](http://web-valueist.csmonk.com/)
 
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
@@ -9,6 +22,30 @@ exit code if the condition is satisfied
 While in project directory:
 ```
 ./install.sh
+```
+
+### Installation
+
+You can install `web-valueist` from PyPI using your preferred package manager:
+
+**pip:**
+```bash
+pip install web-valueist
+```
+
+**Poetry:**
+```bash
+poetry add web-valueist
+```
+
+**uv:**
+```bash
+uv pip install web-valueist
+```
+
+**pipenv:**
+```bash
+pipenv install web-valueist
 ```
 
 ## Usage:
