@@ -15,7 +15,7 @@ type Quantifier = Literal["ANY", "EVERY"]
 
 class EvaluateResult(TypedDict, Generic[T]):
     success: bool
-    value: list[T]
+    values: list[T]
 
 def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)
@@ -103,7 +103,7 @@ def evaluate(
 
     return {
         "success": success,
-        "value": parsed_current_values,
+        "values": parsed_current_values,
     }
 
 

@@ -72,7 +72,7 @@ result = web_valueist.evaluate(
 )
 
 if result["success"]:
-    print(f"Match found! Fetched values (typed): {result['value']}")
+    print(f"Match found! Fetched values (typed): {result['values']}")
 else:
     print("Condition not met.")
 ```
@@ -145,7 +145,7 @@ python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
 
 Output:
 ```json
-{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": ["Example Domain"]}}
+{"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "values": ["Example Domain"]}}
 ```
 
 #### Using Quantifiers
