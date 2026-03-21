@@ -93,4 +93,17 @@ jobs:
           fi
 
           SELECTED_NAME=${REMAINING[$RANDOM % ${#REMAINING[@]}]}
-          gh release create v${{ env.NEW_VERSION }} --title "v${{ env.NEW_VERSION }} - $SELECTED_NAME" --notes "Release v${{ env.NEW_VERSION }} named after the famous historical navigator/cartographer: $SELECTED_NAME."
+
+          # Extract the specific changelog section for this version
+          awk -v ver="${{ env.NEW_VERSION }}" '
+            /^## \[/ {
+              if (match($0, "^## \\[" ver "\\]")) { p=1; next }
+              else if (p) { p=0; nextfile }
+            }
+            p { print }
+          ' CHANGELOG.md > release_notes.md
+
+          # Prepend the intro message to the release notes
+          echo "Release v${{ env.NEW_VERSION }} named after the famous historical navigator/cartographer: **$SELECTED_NAME**." | cat - release_notes.md > temp_notes.md && mv temp_notes.md release_notes.md
+
+          gh release create v${{ env.NEW_VERSION }} --title "v${{ env.NEW_VERSION }} - $SELECTED_NAME" -F release_notes.md
