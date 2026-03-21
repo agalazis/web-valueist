@@ -8,16 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.0.0] - 2026-03-20
 
 ### Added
-- Initial release of the `web_valueist` CLI tool.
 - Project URLs added to `pyproject.toml`.
 - Added test cases for `ParserNotSupportedError` exception.
-- Fetch values from URLs using CSS selectors and perform comparisons against reference values.
-- Support for parsing fetched values as `int`, `str`, `float`, and `bool`.
-- Support for multiple comparison operators (e.g., `>`, `<`, `=`, `!=`, `>=`, `<=`, `gt`, `lt`, `eq`, `ne`, `ge`, `le`).
-- Quantifiers `ANY` and `EVERY` to control how multiple matching elements are evaluated (default is `ANY`).
-- CLI options:
-  - `--debug` flag to show debug logs including found values.
-  - `--json` flag to output input arguments and results in structured JSON format.
 
 ### Changed
 - Bumped minimum Python version to `>=3.12`.
@@ -25,3 +17,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 - Removed `lxml` dependency to avoid build errors, using built-in `html.parser` instead.
+
+## [0.1.0] - 2026-03-18
+
+### Added
+- Initial release of the `web_valueist` CLI tool.
+- Fetch values from URLs using CSS selectors and perform comparisons against reference values.
+- Support for parsing fetched values as `int`, `str`, `float`, and `bool`.
+- Support for multiple comparison operators (e.g., `>`, `<`, `=`, `!=`, `>=`, `<=`, `gt`, `lt`, `eq`, `ne`, `ge`, `le`).
+- Quantifiers `ANY` and `EVERY` to control how multiple matching elements are evaluated (default is `ANY`).
+- CLI options:
+  - `--debug` flag to show debug logs including found values.
+  - `--json` flag to output input arguments and results in structured JSON format.
