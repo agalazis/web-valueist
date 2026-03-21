@@ -1,8 +1,9 @@
 from decimal import ROUND_HALF_UP, Decimal
 import re
 from typing import Literal
+import decimal
 
-from .exception import ValueistException
+from .exception import ValueistException, ParserError
 
 type Parser = Literal["int", "str", "bool", "float"]
 
@@ -64,11 +65,17 @@ def _parse_int(val:str):
     Returns:
         int: The rounded integer for the provided string 
     """
-    float_string=_clean_float_string(val)
-    return int(Decimal(float_string).quantize(exp=INT_EXPONENT, rounding=ROUND_HALF_UP))
+    try:
+        float_string=_clean_float_string(val)
+        return int(Decimal(float_string).quantize(exp=INT_EXPONENT, rounding=ROUND_HALF_UP))
+    except (ValueError, decimal.InvalidOperation) as e:
+        raise ParserError(val, "int") from e
 
 def _parse_float(val:str):
-    return float(_clean_float_string(val))
+    try:
+        return float(_clean_float_string(val))
+    except ValueError as e:
+        raise ParserError(val, "float") from e
 
 def _parse_bool(val:str):
     """Cleans up bool/tiny int string and returns bool
@@ -79,8 +86,11 @@ def _parse_bool(val:str):
     Returns:
         bool: The boolean for the provided string
     """    
-    tiny_int_string = _clean_bool_tiny_int_string(val)
-    return bool(int(tiny_int_string))
+    try:
+        tiny_int_string = _clean_bool_tiny_int_string(val)
+        return bool(int(tiny_int_string))
+    except ValueError as e:
+        raise ParserError(val, "bool") from e
 
 _parsers = {
     "int": _parse_int, 

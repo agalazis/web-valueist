@@ -1,6 +1,8 @@
 import pytest
 from web_valueist import evaluate, ValueNotFound
 
+from web_valueist.lib.exception import ParserError
+
 def test_evaluate_any_quantifier_returns_true_if_at_least_one_match_satisfies_condition(requests_mock):
     url = "https://example.com"
     requests_mock.get(url, text='''
@@ -13,7 +15,7 @@ def test_evaluate_any_quantifier_returns_true_if_at_least_one_match_satisfies_co
     # ANY > 150 should be true because 200 > 150
     result = evaluate(url, ".price", "int", ">", "150", quantifier="ANY")
     assert result["success"] is True
-    assert result["value"] == ["100", "200"]
+    assert result["value"] == [100, 200]
 
 def test_evaluate_every_quantifier_returns_false_if_any_match_fails_condition(requests_mock):
     url = "https://example.com"
@@ -61,7 +63,7 @@ def test_evaluate_returns_dictionary_with_success_and_value(requests_mock):
 
     assert isinstance(result, dict)
     assert result["success"] is True
-    assert result["value"] == ["100"]
+    assert result["value"] == [100]
 
 def test_evaluate_with_float_parser(requests_mock):
     url = "https://example.com"
@@ -69,7 +71,7 @@ def test_evaluate_with_float_parser(requests_mock):
 
     result = evaluate(url, ".price", "float", ">", "100.25")
     assert result["success"] is True
-    assert result["value"] == ["100.50"]
+    assert result["value"] == [100.50]
 
 def test_evaluate_with_not_equal_operators(requests_mock):
     url = "https://example.com"
@@ -87,3 +89,24 @@ def test_evaluate_raises_value_not_found_when_selector_matches_nothing(requests_
 
     with pytest.raises(ValueNotFound):
         evaluate(url, ".non-existent", "str", "eq", "val")
+
+def test_evaluate_strict_parsing_raises_parser_error(requests_mock):
+    url = "https://example.com"
+    requests_mock.get(url, text='<html><body><span class="price">abc</span></body></html>')
+
+    with pytest.raises(ParserError):
+        evaluate(url, ".price", "int", ">", "50", strict_parsing=True)
+
+def test_evaluate_filters_unparsable_values_when_strict_parsing_false(requests_mock):
+    url = "https://example.com"
+    requests_mock.get(url, text='''
+        <html><body>
+            <span class="price">abc</span>
+            <span class="price">100</span>
+            <span class="price">def</span>
+        </body></html>
+    ''')
+
+    result = evaluate(url, ".price", "int", ">", "50", strict_parsing=False)
+    assert result["success"] is True
+    assert result["value"] == [100]

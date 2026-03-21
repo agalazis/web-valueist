@@ -1,17 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
 from . import parser, operator
-from .exception import ValueistException, ValueNotFound
+from .exception import ValueistException, ValueNotFound, ParserError
 from .parser import Parser, ParserNotSupportedError
 from .operator import Operator, OperatorNotSupportedError
 import logging
-from typing import TypedDict
+from typing import TypedDict, Generic, TypeVar, Literal, overload, Any
 
 logger = logging.getLogger(__name__)
 
-class EvaluateResult(TypedDict):
+T = TypeVar("T")
+
+class EvaluateResult(TypedDict, Generic[T]):
     success: bool
-    value: list[str]
+    value: list[T]
 
 def _fetch_values(url: str, selector: str):
     response = requests.get(url, timeout=10)
@@ -29,14 +31,37 @@ def _fetch_values(url: str, selector: str):
 
 
 def _apply_operator(
-    parser_name: Parser,
-    current_value: str,
+    parsed_current_value: operator.ParsedValue,
     operator_name: Operator,
     parsed_reference_value: operator.ParsedValue,
 ):
-    parsed_current_value = parser.parse(parser_name, current_value)
     return operator.apply(operator_name, parsed_current_value, parsed_reference_value)
 
+
+@overload
+def evaluate(
+    url: str, selector: str, parser_name: Literal["int"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+) -> EvaluateResult[int]: ...
+
+@overload
+def evaluate(
+    url: str, selector: str, parser_name: Literal["float"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+) -> EvaluateResult[float]: ...
+
+@overload
+def evaluate(
+    url: str, selector: str, parser_name: Literal["str"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+) -> EvaluateResult[str]: ...
+
+@overload
+def evaluate(
+    url: str, selector: str, parser_name: Literal["bool"], operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+) -> EvaluateResult[bool]: ...
+
+@overload
+def evaluate(
+    url: str, selector: str, parser_name: Parser, operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
+) -> EvaluateResult[Any]: ...
 
 def evaluate(
     url: str,
@@ -45,28 +70,38 @@ def evaluate(
     operator_name: Operator,
     value: str,
     quantifier: str = "ANY",
-) -> EvaluateResult:
+    strict_parsing: bool = False,
+) -> EvaluateResult[Any]:
 
     current_values = _fetch_values(url, selector)
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug("Found value %s", current_values)
 
     parsed_reference_value = parser.parse(parser_name, value)
+
+    parsed_current_values = []
+    for val in current_values:
+        try:
+            parsed_current_values.append(parser.parse(parser_name, val))
+        except ParserError:
+            if strict_parsing:
+                raise
+
     results = [
-        _apply_operator(parser_name, val, operator_name, parsed_reference_value)
-        for val in current_values
+        _apply_operator(parsed_val, operator_name, parsed_reference_value)
+        for parsed_val in parsed_current_values
     ]
     if quantifier == "ANY":
-        success = any(results)
+        success = any(results) if results else False
     elif quantifier == "EVERY":
-        success = all(results)
+        success = all(results) if results else False
     else:
         # Fallback to ANY if quantifier is unknown, or we could raise an error
-        success = any(results)
+        success = any(results) if results else False
 
     return {
         "success": success,
-        "value": current_values,
+        "value": parsed_current_values,
     }
 
 
