@@ -174,4 +174,4 @@ While in project directory:
 ```
 
 ---
-Developed by [csmonk](https://www.csmonk.com)
+<p align="center">Maintainer: <a href="https://www.csmonk.com">csmonk</a></p>
