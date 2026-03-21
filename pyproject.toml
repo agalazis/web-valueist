@@ -1,8 +1,8 @@
 [tool.poetry]
 name = "web-valueist"
-version = "1.0.0"
+version = "1.0.1"
 description = ""
-authors = ["Andreas Galazis"]
+authors = ["Andreas Galazis <agalazis@users.noreply.github.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]

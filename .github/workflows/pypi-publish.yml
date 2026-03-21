@@ -32,6 +32,9 @@ jobs:
         virtualenvs-create: true
         virtualenvs-in-project: true
 
+    - name: Workaround for virtualenv 20.33.0 breaking poetry in github actions
+      run: poetry self add virtualenv==20.32.0
+
     - name: Build project for distribution
       run: poetry build
 
