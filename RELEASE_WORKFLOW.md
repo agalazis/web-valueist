@@ -23,8 +23,11 @@ Once triggered, the workflow automatically performs the following steps:
 1. **Checks out the repository.**
 2. **Sets up Python and installs Poetry.**
 3. **Bumps the version** in `pyproject.toml` using `poetry version <bump_type>`.
-4. **Updates `CHANGELOG.md`** by automatically adding a new release header (e.g., `## [1.0.1] - 2026-03-21`) and an `### Added` section at the top of the unreleased changes.
-5. **Commits and pushes** the updated `pyproject.toml` and `CHANGELOG.md` to the branch.
-6. **Creates a GitHub Release** using the GitHub CLI (`gh release create`), which automatically tags the new version in Git (e.g., `v1.0.1`).
+4. **Generates Release Notes** by using the GitHub API to fetch auto-generated release notes since the previous tag.
+5. **Updates `CHANGELOG.md`** by automatically adding a new release header (e.g., `## [1.0.1] - Columbus - 2026-03-21`) and injecting the generated release notes.
+6. **Commits and pushes** the updated `pyproject.toml` and `CHANGELOG.md` to the branch.
+7. **Creates a GitHub Release** using the GitHub CLI (`gh release create`), which automatically tags the new version in Git (e.g., `v1.0.1`).
 
 By creating a GitHub Release, this workflow subsequently triggers the existing `Publish to PyPI` and `Deploy docs to GitHub Pages` workflows, completing the full release pipeline.
+
+> **Note:** For the downstream workflows to be triggered successfully upon a GitHub Release, a repository secret named `PAT` (Personal Access Token) with the appropriate permissions must be provided. Actions performed with the default `GITHUB_TOKEN` intentionally prevent downstream workflow triggers to avoid infinite loops.
