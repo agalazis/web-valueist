@@ -5,6 +5,9 @@
 [![License](https://img.shields.io/github/license/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/blob/main/LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/issues)
 [![CI](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml/badge.svg)](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml)
+[![Docs](https://github.com/agalazis/web-valueist/actions/workflows/docs-publish.yml/badge.svg)](http://web-valueist.csmonk.com/)
+
+[Documentation Website](http://web-valueist.csmonk.com/)
 
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
@@ -15,6 +18,30 @@ exit code if the condition is satisfied
 While in project directory:
 ```
 ./install.sh
+```
+
+### Installation
+
+You can install `web-valueist` from PyPI using your preferred package manager:
+
+**pip:**
+```bash
+pip install web-valueist
+```
+
+**Poetry:**
+```bash
+poetry add web-valueist
+```
+
+**uv:**
+```bash
+uv pip install web-valueist
+```
+
+**pipenv:**
+```bash
+pipenv install web-valueist
 ```
 
 ## Usage:
@@ -106,18 +133,3 @@ If no quantifier is specified, `ANY` is used by default.
 ```
 */30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 &&message="Some fancy car matching your criteria was found" &&if command -v notify-send >/dev/null 2>&1 ; then notify-send "$message"; else say "$message"; fi
 ```
-
-## PyPI Setup
-
-The project uses GitHub Actions to automatically publish releases to PyPI using PyPI's trusted publishing (OIDC).
-
-To set this up:
-
-1. Create a PyPI account and verify your email.
-2. In your PyPI account settings, navigate to the **Publishing** section and add a new **Pending Publisher**.
-3. Choose **GitHub** as the source.
-4. Enter the repository details (`agalazis/web-valueist`) and specify the environment name as `pypi`.
-5. In your GitHub repository settings, go to **Environments**.
-6. Create a new environment named `pypi`. This step is crucial for the `environment` claim to be included in the OIDC token and pass PyPI's publisher validation.
-7. You may want to restrict the environment so that only certain branches/tags can deploy to it.
-8. When a new GitHub Release is published, the `.github/workflows/pypi-publish.yml` workflow will automatically trigger, build the package using Poetry, and publish it to PyPI via trusted publishing.
