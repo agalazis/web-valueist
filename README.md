@@ -41,7 +41,31 @@ uv pip install web-valueist
 pipenv install web-valueist
 ```
 
-## Usage:
+## Usage
+
+### Library
+
+You can import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a dictionary indicating whether the condition was met, along with the parsed values.
+
+```python
+import web_valueist
+
+result = web_valueist.evaluate(
+    url="http://example.com",
+    selector="h1",
+    parser_name="str",
+    operator_name="eq",
+    value="Example Domain",
+    quantifier="ANY" # Optional, defaults to "ANY"
+)
+
+if result["success"]:
+    print(f"Match found! Fetched value: {result['value']}")
+else:
+    print("Condition not met.")
+```
+
+### CLI
 
 `web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
 
@@ -60,7 +84,7 @@ options:
   --json          Output input and result as JSON
 ```
 
-## Sample Usage
+#### Sample Usage
 
 By default, `web_valueist` is silent and communicates success or failure via the exit code.
 
@@ -84,7 +108,7 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 
 Exit Code: `1`
 
-### Debugging
+#### Debugging
 
 Use the `--debug` flag to see the values fetched from the web.
 
@@ -98,7 +122,7 @@ Output:
 DEBUG:web_valueist.lib:Found value ['245']
 ```
 
-### JSON Output
+#### JSON Output
 
 Use the `--json` flag to get a structured output.
 
@@ -111,7 +135,7 @@ Output:
 {"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
 ```
 
-### Using Quantifiers
+#### Using Quantifiers
 
 When a selector matches multiple elements, you can use `ANY` or `EVERY`.
 
@@ -125,32 +149,10 @@ python -m web_valueist https://example.com int EVERY .price ">" 100
 
 If no quantifier is specified, `ANY` is used by default.
 
-### Sample cron job
+#### Sample cron job
 
 ```bash
 */30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 &&message="Some fancy car matching your criteria was found" &&if command -v notify-send >/dev/null 2>&1 ; then notify-send "$message"; else say "$message"; fi
-```
-
-## Library Usage
-
-You can also import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a dictionary indicating whether the condition was met, along with the parsed values.
-
-```python
-import web_valueist
-
-result = web_valueist.evaluate(
-    url="http://example.com",
-    selector="h1",
-    parser_name="str",
-    operator_name="eq",
-    value="Example Domain",
-    quantifier="ANY" # Optional, defaults to "ANY"
-)
-
-if result["success"]:
-    print(f"Match found! Fetched value: {result['value']}")
-else:
-    print("Condition not met.")
 ```
 
 ## Development setup from repository
