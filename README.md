@@ -172,3 +172,6 @@ While in project directory:
 ```bash
 ./install.sh
 ```
+
+---
+Developed by [csmonk](https://www.csmonk.com)
