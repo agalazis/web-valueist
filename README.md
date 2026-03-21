@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="logo.svg" alt="Web Valueist Logo">
+</p>
+
 # Web Valueist
 
 [![PyPI version](https://badge.fury.io/py/web-valueist.svg)](https://badge.fury.io/py/web-valueist)
