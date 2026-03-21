@@ -48,15 +48,50 @@ jobs:
           echo "NEW_VERSION=$NEW_VERSION" >> $GITHUB_ENV
           echo "version=$NEW_VERSION" >> $GITHUB_OUTPUT
 
+      - name: Pick Release Name
+        id: pick_name
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          mapfile -t NAVIGATORS < RELEASE_CANDIDATES
+
+          # Fetch previous release titles to find used names
+          USED_NAMES=$(gh release list --limit 100 | awk -F'	' '{print $1}')
+
+          REMAINING=()
+          for nav in "${NAVIGATORS[@]}"; do
+            if ! echo "$USED_NAMES" | grep -q "$nav"; then
+              REMAINING+=("$nav")
+            fi
+          done
+
+          # If all names are used, reset and use the full list
+          if [ ${#REMAINING[@]} -eq 0 ]; then
+            REMAINING=("${NAVIGATORS[@]}")
+          fi
+
+          SELECTED_NAME=${REMAINING[$RANDOM % ${#REMAINING[@]}]}
+          echo "SELECTED_NAME=$SELECTED_NAME" >> $GITHUB_ENV
+          echo "selected_name=$SELECTED_NAME" >> $GITHUB_OUTPUT
+
+      - name: Generate Release Notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh api repos/${{ github.repository }}/releases/generate-notes -f tag_name=v${{ env.NEW_VERSION }} -f target_commitish=${{ github.ref_name }} -q .body > generated_notes.md
+
+
+
       - name: Update Changelog
         run: |
           DATE=$(date +'%Y-%m-%d')
-          awk -v ver="${{ env.NEW_VERSION }}" -v date="$DATE" '
+          awk -v ver="${{ env.NEW_VERSION }}" -v name="${{ env.SELECTED_NAME }}" -v date="$DATE" '
             /^## \[.*\] - .*/ && !inserted {
-              print "## [" ver "] - " date
+              print "## [" ver "] - " name " - " date
               print ""
-              print "### Added"
-              print "- "
+              while ((getline line < "generated_notes.md") > 0)
+                print line
+              close("generated_notes.md")
               print ""
               print $0
               inserted = 1
@@ -73,26 +108,9 @@ jobs:
 
       - name: Create GitHub Release
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.PAT || secrets.GITHUB_TOKEN }}
         run: |
-          mapfile -t NAVIGATORS < RELEASE_CANDIDATES
-
-          # Fetch previous release titles to find used names
-          USED_NAMES=$(gh release list --limit 100 | awk -F'\t' '{print $1}')
-
-          REMAINING=()
-          for nav in "${NAVIGATORS[@]}"; do
-            if ! echo "$USED_NAMES" | grep -q "$nav"; then
-              REMAINING+=("$nav")
-            fi
-          done
-
-          # If all names are used, reset and use the full list
-          if [ ${#REMAINING[@]} -eq 0 ]; then
-            REMAINING=("${NAVIGATORS[@]}")
-          fi
-
-          SELECTED_NAME=${REMAINING[$RANDOM % ${#REMAINING[@]}]}
+          SELECTED_NAME="${{ env.SELECTED_NAME }}"
 
           # Extract the specific changelog section for this version
           awk -v ver="${{ env.NEW_VERSION }}" '
