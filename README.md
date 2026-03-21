@@ -9,9 +9,9 @@
 [![License](https://img.shields.io/github/license/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/blob/main/LICENSE)
 [![GitHub Issues](https://img.shields.io/github/issues/agalazis/web-valueist.svg)](https://github.com/agalazis/web-valueist/issues)
 [![CI](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml/badge.svg)](https://github.com/agalazis/web-valueist/actions/workflows/pypi-publish.yml)
-[![Docs](https://github.com/agalazis/web-valueist/actions/workflows/docs-publish.yml/badge.svg)](http://web-valueist.csmonk.com/)
+[![Docs](https://github.com/agalazis/web-valueist/actions/workflows/docs-publish.yml/badge.svg)](https://web-valueist.csmonk.com/)
 
-[Documentation Website](http://web-valueist.csmonk.com/)
+[Documentation Website](https://web-valueist.csmonk.com/)
 
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
