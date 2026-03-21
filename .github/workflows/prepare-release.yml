@@ -75,7 +75,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          NAVIGATORS=("Vasco da Gama" "Christopher Columbus" "Ferdinand Magellan" "James Cook" "Amerigo Vespucci" "Leif Erikson" "Ibn Battuta" "Zheng He" "Gerardus Mercator" "Ptolemy" "Abel Tasman" "John Cabot" "Bartolomeu Dias" "Jacques Cartier" "Hernán Cortés" "Roald Amundsen")
+          mapfile -t NAVIGATORS < RELEASE_CANDIDATES
 
           # Fetch previous release titles to find used names
           USED_NAMES=$(gh release list --limit 100 | awk -F'\t' '{print $1}')
