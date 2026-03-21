@@ -30,15 +30,17 @@ jobs:
       # we can just upload the repo as is (or a docs directory if we have one).
       # Here we assume README.md is enough or we just build a basic static directory.
       # To set CNAME, we create a CNAME file.
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
+
       - name: Create CNAME and index.html
         run: |
           mkdir -p docs_site
           echo "web-valueist.csmonk.com" > docs_site/CNAME
-          cp README.md docs_site/index.md
-          # Convert Markdown to basic HTML for simplest serving if no SSG is used
-          echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Web Valueist</title></head><xmp theme="strapdown" style="display:none;">' > docs_site/index.html
-          cat README.md >> docs_site/index.html
-          echo '</xmp><script src="http://strapdownjs.com/v/0.2/strapdown.js"></script></html>' >> docs_site/index.html
+          # Convert Markdown to HTML using Pandoc, including the Morph Bootswatch theme
+          pandoc README.md -f markdown -t html -s -o docs_site/index.html \
+            --metadata title="Web Valueist Documentation" \
+            -H <(echo '<link rel="stylesheet" href="https://bootswatch.com/5/morph/bootstrap.min.css"><style>body { max-width: 900px; margin: 0 auto; padding: 2rem; }</style>')
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
