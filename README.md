@@ -16,15 +16,19 @@
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Library](#library)
+  - [CLI](#cli)
+    - [Sample Usage](#sample-usage)
+    - [Debugging](#debugging)
+    - [JSON Output](#json-output)
+    - [Using Quantifiers](#using-quantifiers)
+    - [Sample cron job](#sample-cron-job)
+- [Development setup from repository](#development-setup-from-repository)
 
-## Setup
-
-While in project directory:
-```
-./install.sh
-```
-
-### Installation
+## Installation
 
 You can install `web-valueist` from PyPI using your preferred package manager:
 
@@ -48,11 +52,35 @@ uv pip install web-valueist
 pipenv install web-valueist
 ```
 
-## Usage:
+## Usage
+
+### Library
+
+You can import and use `web_valueist` directly in your Python code without relying on the CLI. The `evaluate` function returns a dictionary indicating whether the condition was met, along with the parsed values.
+
+```python
+import web_valueist
+
+result = web_valueist.evaluate(
+    url="http://example.com",
+    selector="h1",
+    parser_name="str",
+    operator_name="eq",
+    value="Example Domain",
+    quantifier="ANY" # Optional, defaults to "ANY"
+)
+
+if result["success"]:
+    print(f"Match found! Fetched value: {result['value']}")
+else:
+    print("Condition not met.")
+```
+
+### CLI
 
 `web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
 
-```
+```text
 positional arguments:
   url
   parser_name
@@ -67,13 +95,13 @@ options:
   --json          Output input and result as JSON
 ```
 
-## Sample Usage
+#### Sample Usage
 
 By default, `web_valueist` is silent and communicates success or failure via the exit code.
 
 Sample success
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240
 ```
 
@@ -83,7 +111,7 @@ Exit Code: `0`
 
 Sample failure
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer "<" 240
 ```
 
@@ -91,25 +119,25 @@ python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm
 
 Exit Code: `1`
 
-### Debugging
+#### Debugging
 
 Use the `--debug` flag to see the values fetched from the web.
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240 --debug
 ```
 
 Output:
 
-```
+```text
 DEBUG:web_valueist.lib:Found value ['245']
 ```
 
-### JSON Output
+#### JSON Output
 
 Use the `--json` flag to get a structured output.
 
-```
+```bash
 python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
 ```
 
@@ -118,7 +146,7 @@ Output:
 {"args": {"url": "http://example.com", "parser_name": "str", "quantifier": "ANY", "selector": "h1", "operator_name": "eq", "value": "Example Domain"}, "result": {"success": true, "value": "Example Domain"}}
 ```
 
-### Using Quantifiers
+#### Using Quantifiers
 
 When a selector matches multiple elements, you can use `ANY` or `EVERY`.
 
@@ -126,14 +154,24 @@ When a selector matches multiple elements, you can use `ANY` or `EVERY`.
 - **EVERY**: All selector matches need to satisfy the condition.
 
 Example using `EVERY`:
-```
+```bash
 python -m web_valueist https://example.com int EVERY .price ">" 100
 ```
 
 If no quantifier is specified, `ANY` is used by default.
 
-### Sample cron job
+#### Sample cron job
 
-```
+```bash
 */30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 &&message="Some fancy car matching your criteria was found" &&if command -v notify-send >/dev/null 2>&1 ; then notify-send "$message"; else say "$message"; fi
 ```
+
+## Development setup from repository
+
+While in project directory:
+```bash
+./install.sh
+```
+
+---
+<p align="center">Maintainer: <a href="https://www.csmonk.com">csmonk</a></p>
