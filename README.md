@@ -16,6 +16,17 @@
 Fetches a value from the web, compares it with a given value and exits with zero
 exit code if the condition is satisfied
 
+## Table of Contents
+- [Installation](#installation)
+- [Usage](#usage)
+  - [Library](#library)
+  - [CLI](#cli)
+    - [Sample Usage](#sample-usage)
+    - [Debugging](#debugging)
+    - [JSON Output](#json-output)
+    - [Using Quantifiers](#using-quantifiers)
+    - [Sample cron job](#sample-cron-job)
+- [Development setup from repository](#development-setup-from-repository)
 
 ## Installation
 
