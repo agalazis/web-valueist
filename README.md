@@ -20,7 +20,7 @@ exit code if the condition is satisfied
 ## Setup
 
 While in project directory:
-```
+```bash
 ./install.sh
 ```
 
@@ -52,7 +52,7 @@ pipenv install web-valueist
 
 `web_valueist [-h] [--debug] [--json] url parser_name [quantifier] selector operator_name value`
 
-```
+```text
 positional arguments:
   url
   parser_name
@@ -73,7 +73,7 @@ By default, `web_valueist` is silent and communicates success or failure via the
 
 Sample success
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240
 ```
 
@@ -83,7 +83,7 @@ Exit Code: `0`
 
 Sample failure
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer "<" 240
 ```
 
@@ -95,13 +95,13 @@ Exit Code: `1`
 
 Use the `--debug` flag to see the values fetched from the web.
 
-```
+```bash
 python -m web_valueist https://www.ikea.com.cy/en/products/fjallhavre-duvet-warm-240x220-cm/70458057/ int span.price__integer ">" 240 --debug
 ```
 
 Output:
 
-```
+```text
 DEBUG:web_valueist.lib:Found value ['245']
 ```
 
@@ -109,7 +109,7 @@ DEBUG:web_valueist.lib:Found value ['245']
 
 Use the `--json` flag to get a structured output.
 
-```
+```bash
 python -m web_valueist http://example.com str h1 "eq" "Example Domain" --json
 ```
 
@@ -126,7 +126,7 @@ When a selector matches multiple elements, you can use `ANY` or `EVERY`.
 - **EVERY**: All selector matches need to satisfy the condition.
 
 Example using `EVERY`:
-```
+```bash
 python -m web_valueist https://example.com int EVERY .price ">" 100
 ```
 
@@ -134,6 +134,6 @@ If no quantifier is specified, `ANY` is used by default.
 
 ### Sample cron job
 
-```
+```bash
 */30 * * * * web_valueist "https://www.bazaraki.com/car-motorbikes-boats-and-parts/cars-trucks-and-vans/mazda/mazda-mx5/year_min---71/?ordering=cheapest&lat=35.01804869361969&lng=34.04709596563199&radius=5000&price_max=30000" int .advert__content-price._not-title   "<" 22500 &&message="Some fancy car matching your criteria was found" &&if command -v notify-send >/dev/null 2>&1 ; then notify-send "$message"; else say "$message"; fi
 ```
