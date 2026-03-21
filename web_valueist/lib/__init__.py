@@ -5,7 +5,7 @@ from .exception import ValueistException, ValueNotFound, ParserError
 from .parser import Parser, ParserNotSupportedError
 from .operator import Operator, OperatorNotSupportedError
 import logging
-from typing import TypedDict, Generic, TypeVar, Literal, overload, Any
+from typing import TypedDict, Generic, TypeVar, Literal, overload
 
 logger = logging.getLogger(__name__)
 
@@ -61,7 +61,7 @@ def evaluate(
 @overload
 def evaluate(
     url: str, selector: str, parser_name: Parser, operator_name: Operator, value: str, quantifier: str = "ANY", strict_parsing: bool = False
-) -> EvaluateResult[Any]: ...
+) -> EvaluateResult[int | float | str | bool]: ...
 
 def evaluate(
     url: str,
@@ -71,7 +71,7 @@ def evaluate(
     value: str,
     quantifier: str = "ANY",
     strict_parsing: bool = False,
-) -> EvaluateResult[Any]:
+) -> EvaluateResult[int | float | str | bool]:
 
     current_values = _fetch_values(url, selector)
     if logger.isEnabledFor(logging.DEBUG):
