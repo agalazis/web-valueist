@@ -61,7 +61,7 @@ def test_evaluate_returns_dictionary_with_success_and_value(requests_mock):
 
     assert isinstance(result, dict)
     assert result["success"] is True
-    assert result["value"] == "100"
+    assert result["value"] == ["100"]
 
 def test_evaluate_with_float_parser(requests_mock):
     url = "https://example.com"
@@ -69,7 +69,7 @@ def test_evaluate_with_float_parser(requests_mock):
 
     result = evaluate(url, ".price", "float", ">", "100.25")
     assert result["success"] is True
-    assert result["value"] == "100.50"
+    assert result["value"] == ["100.50"]
 
 def test_evaluate_with_not_equal_operators(requests_mock):
     url = "https://example.com"
