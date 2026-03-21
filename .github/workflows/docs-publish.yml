@@ -37,9 +37,9 @@ jobs:
         run: |
           mkdir -p docs_site
           echo "web-valueist.csmonk.com" > docs_site/CNAME
-          cp logo.svg docs_site/
           # Convert Markdown to HTML using Pandoc, including the Morph Bootswatch theme
-          pandoc README.md -f markdown -t html -s -o docs_site/index.html \
+          # --embed-resources explicitly base64 encodes and embeds the local logo.svg
+          pandoc README.md -f markdown -t html -s --embed-resources --standalone -o docs_site/index.html \
             --metadata title="Web Valueist Documentation" \
             -H <(echo '<link rel="stylesheet" href="https://bootswatch.com/5/morph/bootstrap.min.css"><style>body { max-width: 900px; margin: 0 auto; padding: 2rem; }</style>')
 
