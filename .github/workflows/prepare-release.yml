@@ -75,4 +75,22 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create v${{ env.NEW_VERSION }} --title "v${{ env.NEW_VERSION }}" --notes "Release v${{ env.NEW_VERSION }}"
+          NAVIGATORS=("Vasco da Gama" "Christopher Columbus" "Ferdinand Magellan" "James Cook" "Amerigo Vespucci" "Leif Erikson" "Ibn Battuta" "Zheng He" "Gerardus Mercator" "Ptolemy" "Abel Tasman" "John Cabot" "Bartolomeu Dias" "Jacques Cartier" "Hernán Cortés" "Roald Amundsen")
+
+          # Fetch previous release titles to find used names
+          USED_NAMES=$(gh release list --limit 100 | awk -F'\t' '{print $1}')
+
+          REMAINING=()
+          for nav in "${NAVIGATORS[@]}"; do
+            if ! echo "$USED_NAMES" | grep -q "$nav"; then
+              REMAINING+=("$nav")
+            fi
+          done
+
+          # If all names are used, reset and use the full list
+          if [ ${#REMAINING[@]} -eq 0 ]; then
+            REMAINING=("${NAVIGATORS[@]}")
+          fi
+
+          SELECTED_NAME=${REMAINING[$RANDOM % ${#REMAINING[@]}]}
+          gh release create v${{ env.NEW_VERSION }} --title "v${{ env.NEW_VERSION }} - $SELECTED_NAME" --notes "Release v${{ env.NEW_VERSION }} named after the famous historical navigator/cartographer: $SELECTED_NAME."
