@@ -32,7 +32,7 @@ class OperatorNotSupportedError(ValueistException):
         )
 
 
-def _get_operator(operator_name: str):
+def get_operator(operator_name: str):
     try:
         return _operators[operator_name]
     except KeyError as exception:
@@ -40,4 +40,4 @@ def _get_operator(operator_name: str):
 
 
 def apply(operator_name: Operator, a: ParsedValue, b: ParsedValue) -> bool:
-    return _get_operator(operator_name)(a, b)
+    return get_operator(operator_name)(a, b)

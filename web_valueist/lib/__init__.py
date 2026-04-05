@@ -32,14 +32,6 @@ def _fetch_values(url: str, selector: str):
     return values
 
 
-def _apply_operator(
-    parsed_current_value: operator.ParsedValue,
-    operator_name: Operator,
-    parsed_reference_value: operator.ParsedValue,
-):
-    return operator.apply(operator_name, parsed_current_value, parsed_reference_value)
-
-
 @overload
 def evaluate(
     url: str, selector: str, parser_name: Literal["int"], operator_name: Operator, value: str, quantifier: Quantifier = "ANY", strict_parsing: bool = False
@@ -89,8 +81,9 @@ def evaluate(
             if strict_parsing:
                 raise
 
+    op_func = operator.get_operator(operator_name)
     results = [
-        _apply_operator(parsed_val, operator_name, parsed_reference_value)
+        op_func(parsed_val, parsed_reference_value)
         for parsed_val in parsed_current_values
     ]
     if quantifier == "ANY":
