@@ -26,10 +26,11 @@ _operators = {
 
 
 class OperatorNotSupportedError(ValueistException):
-    def __init__(self, *args: object) -> None:
-        super().__init__(
-            f"Operator not supported. Possible operators are: {','.join(_operators.keys())}"
-        )
+    def __init__(self, message: str | None = None) -> None:
+        base_message = f"Operator not supported. Possible operators are: {','.join(_operators.keys())}"
+        if message:
+            base_message = f"{base_message}: ({message})"
+        super().__init__(base_message)
 
 
 def get_operator(operator_name: str):

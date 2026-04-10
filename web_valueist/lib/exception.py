@@ -3,8 +3,11 @@ class ValueistException(Exception):
 
 
 class ValueNotFound(ValueistException):
-    def __init__(self, *args: object) -> None:
-        super().__init__("Value not found")
+    def __init__(self, message: str | None = None) -> None:
+        base_message = "Value not found"
+        if message:
+            base_message = f"{base_message}: ({message})"
+        super().__init__(base_message)
 
 
 class ParserError(ValueistException):
