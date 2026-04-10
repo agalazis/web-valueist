@@ -101,10 +101,11 @@ _parsers = {
 
 
 class ParserNotSupportedError(ValueistException):
-    def __init__(self, *args: object) -> None:
-        super().__init__(
-            f"Parser not supported. Possible parsers are: {','.join(_parsers.keys())}"
-        )
+    def __init__(self, message: str | None = None) -> None:
+        base_message = f"Parser not supported. Possible parsers are: {','.join(_parsers.keys())}"
+        if message:
+            base_message = f"{base_message}: ({message})"
+        super().__init__(base_message)
 
 
 def _get_parser(parser_name: str):
