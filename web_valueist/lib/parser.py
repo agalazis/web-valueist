@@ -9,6 +9,10 @@ type Parser = Literal["int", "str", "bool", "float"]
 
 INT_EXPONENT=Decimal('0')
 
+_FLOAT_CLEAN_RE = re.compile(r"[^\d|.,-]")
+_FLOAT_DECIMAL_RE = re.compile(r"(?![.,]\d{1,2}$)[.,]")
+_BOOL_CLEAN_RE = re.compile(r"(?i)(?!true|false|yes|no|1|0|t|f|y|n).")
+
 def _clean_float_string(val: str):
     """Cleans up float string and returns float
     The cleanup regex does the following
@@ -23,7 +27,7 @@ def _clean_float_string(val: str):
         str: The float for the provided string
     """
     # Keep only digits, commas, dots and leading minus
-    cleaned = re.sub(r"[^\d|.,-]", "", val)
+    cleaned = _FLOAT_CLEAN_RE.sub("", val)
 
     # Ensure minus is only at the beginning
     if cleaned.startswith("-"):
@@ -33,7 +37,7 @@ def _clean_float_string(val: str):
 
     # Handle thousands separators and decimal points
     # This regex removes dots or commas that are NOT followed by exactly 1 or 2 digits at the end of the string
-    return re.sub(r"(?![.,]\d{1,2}$)[.,]", "", cleaned).replace(",", ".")
+    return _FLOAT_DECIMAL_RE.sub("", cleaned).replace(",", ".")
 
 def _clean_bool_tiny_int_string(val: str):
     """Cleans up bool/tiny int values and returns tiny int string
@@ -45,7 +49,7 @@ def _clean_bool_tiny_int_string(val: str):
         str: The tiny int for the provided string 
     """
     return (
-        re.sub("(?i)(?!true|false|yes|no|1|0|t|f|y|n).", "", val)
+        _BOOL_CLEAN_RE.sub("", val)
         .upper()
         .replace("F", "0")
         .replace("T", "1")
