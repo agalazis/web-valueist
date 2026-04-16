@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import json
 import logging
+import sys
 import web_valueist
 from argparse import ArgumentParser
 from typing import TypedDict, Unpack
@@ -23,8 +25,6 @@ class CliArgs(Args):
 
 
 def _detect_optional_arguments(config: dict[str, dict]):
-    import sys
-
     positional_args = [arg for arg in sys.argv[1:] if not arg.startswith("-")]
     results = {}
     for name, attr in config.items():
@@ -110,8 +110,6 @@ def sigterm_handler(_, __):
 
 
 def main():
-    import json
-    import sys
     args=_initialize_cli()
     json_output = args.pop("json")
     result = web_valueist.evaluate(**args)
@@ -129,10 +127,10 @@ def __main__():
         main()
     except KeyboardInterrupt:
         logger.error("ok, bye...\n")
-        exit(1)
+        sys.exit(1)
     except web_valueist.ValueistException as e:
         logger.error(f"Error: {e}")
-        exit(1)
+        sys.exit(1)
 
 
 if __name__ == "__main__":
