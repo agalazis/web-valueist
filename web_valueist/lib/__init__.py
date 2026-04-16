@@ -82,17 +82,17 @@ def evaluate(
                 raise
 
     op_func = operator.get_operator(operator_name)
-    results = [
+    results = (
         op_func(parsed_val, parsed_reference_value)
         for parsed_val in parsed_current_values
-    ]
-    if quantifier == "ANY":
-        success = any(results) if results else False
+    )
+    if not parsed_current_values:
+        success = False
     elif quantifier == "EVERY":
-        success = all(results) if results else False
+        success = all(results)
     else:
-        # Fallback to ANY if quantifier is unknown, or we could raise an error
-        success = any(results) if results else False
+        # ANY or fallback
+        success = any(results)
 
     return {
         "success": success,
