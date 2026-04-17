@@ -12,6 +12,7 @@ INT_EXPONENT=Decimal('0')
 _FLOAT_CLEAN_RE = re.compile(r"[^\d|.,-]")
 _FLOAT_DECIMAL_RE = re.compile(r"(?![.,]\d{1,2}$)[.,]")
 _BOOL_CLEAN_RE = re.compile(r"(?i)(?!true|false|yes|no|1|0|t|f|y|n).")
+_BOOL_TRANS = str.maketrans("FTYN", "0110")
 
 def _clean_float_string(val: str):
     """Cleans up float string and returns float
@@ -51,10 +52,7 @@ def _clean_bool_tiny_int_string(val: str):
     return (
         _BOOL_CLEAN_RE.sub("", val)
         .upper()
-        .replace("F", "0")
-        .replace("T", "1")
-        .replace("Y", "1")
-        .replace("N", "0")
+        .translate(_BOOL_TRANS)
     )
 
 def _parse_int(val:str):
