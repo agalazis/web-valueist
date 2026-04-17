@@ -38,7 +38,3 @@ def get_operator(operator_name: str):
         return _operators[operator_name]
     except KeyError as exception:
         raise OperatorNotSupportedError from exception
-
-
-def apply(operator_name: Operator, a: ParsedValue, b: ParsedValue) -> bool:
-    return get_operator(operator_name)(a, b)
